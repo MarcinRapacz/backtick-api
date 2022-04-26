@@ -7,7 +7,9 @@
     "build": "npx tsc",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/app.js\"",
     "start": "node dist/app.js",
-    "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
+    "prettier:check": "npx prettier --check .",
+    "prettier:write": "npx prettier --write ."
   },
   "keywords": [],
   "author": "Marcin Rapacz",
@@ -23,8 +25,10 @@
     "@typescript-eslint/parser": "^5.21.0",
     "concurrently": "^7.1.0",
     "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-node": "^11.1.0",
     "nodemon": "^2.0.15",
+    "prettier": "2.6.2",
     "typescript": "^4.6.3"
   },
   "engines": {
