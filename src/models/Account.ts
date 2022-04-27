@@ -66,7 +66,7 @@ export const Account = sequelize.define<IAccountModel>('Account', {
     allowNull: false,
   },
   role: {
-    type: DataTypes.ENUM('admin' || 'customer' || 'guest'),
+    type: DataTypes.ENUM('admin', 'customer', 'guest'),
     defaultValue: 'customer',
     allowNull: false,
   },
