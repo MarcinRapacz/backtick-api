@@ -168,21 +168,53 @@ export const login = async (
  * @swagger
  *  /api/account/recover-password:
  *    post:
- *      summary: TODO Recover password
+ *      summary: Recover password
  *      tags: [Account]
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              properties:
+ *                email:
+ *                  type: string
+ *                  example: test@test.com
  *      responses:
+ *        200:
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: Password change link has been sent
+ *                  success:
+ *                    type: boolean
+ *                    example: true
  *        500:
  *          $ref: '#/components/hidden/_ServerError'
  */
 export const recoverPassword = async (
-  req: Request,
+  req: IAccountRequest,
   res: Response<IAccountResponse>,
   next: NextFunction
 ) => {
   try {
+    const { email } = req.body;
+    const account = await Account.findOne({ where: { email } });
+
+    if (account) {
+      const activeToken = crypto.randomUUID();
+      account.activeToken = activeToken;
+      await account.save();
+      // TODO: Send active url by email
+    }
+
     res.status(200).json({
-      message: 'TODO: recoverPassword',
-      success: false,
+      message:
+        '[AccountController > recoverPassword] Password change link has been sent',
+      success: true,
     });
   } catch (error) {
     next(`[AccountController > recoverPassword] ${error}`);
