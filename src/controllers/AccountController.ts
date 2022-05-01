@@ -462,6 +462,54 @@ export const remove = async (
   }
 };
 
+/**
+ * @swagger
+ *  /api/account/deactivate-password-recovery-link:
+ *    put:
+ *      summary: Deactive recovery link
+ *      tags: [Account]
+ *      security:
+ *        - bearerAuth: []
+ *      responses:
+ *        200:
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: Recovery link has been deactivated
+ *                  success:
+ *                    type: boolean
+ *                    example: true
+ *        401:
+ *          $ref: '#/components/responses/protected'
+ *        500:
+ *          $ref: '#/components/hidden/_ServerError'
+ */
+export const deactivatePasswordRecoveryLink = async (
+  req: Request,
+  res: Response<IAccountResponse>,
+  next: NextFunction
+) => {
+  try {
+    const account: IAccountModel = req.custom.authorization.account;
+    account.activeToken = null;
+    await account.save();
+
+    res.status(200).json({
+      message:
+        '[AccountController > deactivatePasswordRecoveryLink] Recovery link has been deactivated',
+      success: true,
+    });
+
+    // const account = await Account.findOne({where: {id}});
+  } catch (error) {
+    next(`[AccountController > deactivatePasswordRecoveryLink] ${error}`);
+  }
+};
+
 const generateTokens = (account: IAccountModel) => {
   const payload = {
     id: account.id,

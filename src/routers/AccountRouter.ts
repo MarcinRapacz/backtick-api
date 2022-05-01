@@ -34,6 +34,15 @@ router.get('/me', authorization.protect, Controller.me);
 router.put('/active/:activeToken', Controller.active);
 
 /**
+ * Deactivate password recovery link
+ */
+router.put(
+  '/deactivate-password-recovery-link',
+  authorization.protect,
+  Controller.deactivatePasswordRecoveryLink
+);
+
+/**
  * Refresh token
  */
 router.get('/refresh-token', authorization.refresh, Controller.refreshToken);
