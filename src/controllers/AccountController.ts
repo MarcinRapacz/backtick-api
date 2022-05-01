@@ -312,6 +312,50 @@ export const refreshToken = async (
   }
 };
 
+/**
+ * @swagger
+ *  /api/account/delete:
+ *    delete:
+ *      summary: Remove account
+ *      tags: [Account]
+ *      security:
+ *        - bearerAuth: []
+ *      responses:
+ *        200:
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: Account has been destroyed
+ *                  success:
+ *                    type: boolean
+ *                    example: true
+ *        401:
+ *          $ref: '#/components/responses/protected'
+ *        500:
+ *          $ref: '#/components/hidden/_ServerError'
+ */
+export const remove = async (
+  req: IAccountRequest,
+  res: Response<IAccountResponse>,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.custom.authorization.account;
+    await Account.destroy({ where: { id } });
+
+    res.status(200).json({
+      success: true,
+      message: 'Account has been destroyed',
+    });
+  } catch (error) {
+    next(`[AccountController > remove] ${error}`);
+  }
+};
+
 const generateTokens = (account: IAccountModel) => {
   const payload = {
     id: account.id,

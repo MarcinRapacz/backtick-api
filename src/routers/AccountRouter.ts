@@ -34,4 +34,9 @@ router.get('/active', Controller.active);
  */
 router.get('/refresh-token', authorization.refresh, Controller.refreshToken);
 
+/**
+ * Remove account
+ */
+router.delete('/delete', authorization.protect, Controller.remove);
+
 export default router;
