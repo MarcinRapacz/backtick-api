@@ -270,6 +270,59 @@ export const me = async (
 
 /**
  * @swagger
+ *  /api/account/refresh-token:
+ *    get:
+ *      summary: Refresh token
+ *      tags: [Account]
+ *      security:
+ *        - bearerAuth: []
+ *      responses:
+ *        200:
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: New tokens have been generated
+ *                  token:
+ *                    type: string
+ *                    example: token
+ *                  refreshToken:
+ *                    type: string
+ *                    example: refreshToken
+ *                  success:
+ *                    type: boolean
+ *                    example: true
+ *        401:
+ *          $ref: '#/components/responses/protected'
+ *        500:
+ *          $ref: '#/components/hidden/_ServerError'
+ */
+export const refreshToken = async (
+  req: Request,
+  res: Response<IAccountResponse>,
+  next: NextFunction
+) => {
+  try {
+    const { token, refreshToken } = generateTokens(
+      req.custom.authorization.account
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'New tokens have been generated',
+      token,
+      refreshToken,
+    });
+  } catch (error) {
+    next(`[AccountController > refreshToken] ${error}`);
+  }
+};
+
+/**
+ * @swagger
  *  /api/account/active/:active-token:
  *    put:
  *      summary: Active account
@@ -367,9 +420,9 @@ export const active = async (
 
 /**
  * @swagger
- *  /api/account/refresh-token:
- *    get:
- *      summary: Refresh token
+ *  /api/account/deactivate-password-recovery-link:
+ *    put:
+ *      summary: Deactive recovery link
  *      tags: [Account]
  *      security:
  *        - bearerAuth: []
@@ -382,13 +435,7 @@ export const active = async (
  *                properties:
  *                  message:
  *                    type: string
- *                    example: New tokens have been generated
- *                  token:
- *                    type: string
- *                    example: token
- *                  refreshToken:
- *                    type: string
- *                    example: refreshToken
+ *                    example: Recovery link has been deactivated
  *                  success:
  *                    type: boolean
  *                    example: true
@@ -397,24 +444,25 @@ export const active = async (
  *        500:
  *          $ref: '#/components/hidden/_ServerError'
  */
-export const refreshToken = async (
+export const deactivatePasswordRecoveryLink = async (
   req: Request,
   res: Response<IAccountResponse>,
   next: NextFunction
 ) => {
   try {
-    const { token, refreshToken } = generateTokens(
-      req.custom.authorization.account
-    );
+    const account: IAccountModel = req.custom.authorization.account;
+    account.activeToken = null;
+    await account.save();
 
     res.status(200).json({
+      message:
+        '[AccountController > deactivatePasswordRecoveryLink] Recovery link has been deactivated',
       success: true,
-      message: 'New tokens have been generated',
-      token,
-      refreshToken,
     });
+
+    // const account = await Account.findOne({where: {id}});
   } catch (error) {
-    next(`[AccountController > refreshToken] ${error}`);
+    next(`[AccountController > deactivatePasswordRecoveryLink] ${error}`);
   }
 };
 
@@ -459,54 +507,6 @@ export const remove = async (
     });
   } catch (error) {
     next(`[AccountController > remove] ${error}`);
-  }
-};
-
-/**
- * @swagger
- *  /api/account/deactivate-password-recovery-link:
- *    put:
- *      summary: Deactive recovery link
- *      tags: [Account]
- *      security:
- *        - bearerAuth: []
- *      responses:
- *        200:
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  message:
- *                    type: string
- *                    example: Recovery link has been deactivated
- *                  success:
- *                    type: boolean
- *                    example: true
- *        401:
- *          $ref: '#/components/responses/protected'
- *        500:
- *          $ref: '#/components/hidden/_ServerError'
- */
-export const deactivatePasswordRecoveryLink = async (
-  req: Request,
-  res: Response<IAccountResponse>,
-  next: NextFunction
-) => {
-  try {
-    const account: IAccountModel = req.custom.authorization.account;
-    account.activeToken = null;
-    await account.save();
-
-    res.status(200).json({
-      message:
-        '[AccountController > deactivatePasswordRecoveryLink] Recovery link has been deactivated',
-      success: true,
-    });
-
-    // const account = await Account.findOne({where: {id}});
-  } catch (error) {
-    next(`[AccountController > deactivatePasswordRecoveryLink] ${error}`);
   }
 };
 
