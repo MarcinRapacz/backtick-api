@@ -121,26 +121,15 @@ export const register = async (
  *                    example: Logged in
  *                  token:
  *                    type: string
- *                    example: token
+ *                    example: Bearer token
  *                  refreshToken:
  *                    type: string
- *                    refreshToken: refreshToken
+ *                    refreshToken: Bearer refresh token
  *                  success:
  *                    type: boolean
  *                    example: true
  *        401:
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  message:
- *                    type: string
- *                    example: Unauthorized
- *                  success:
- *                    type: boolean
- *                    example: false
- *
+ *          $ref: '#/components/responses/protected'
  *        500:
  *          $ref: '#/components/hidden/_ServerError'
  */
@@ -173,7 +162,16 @@ export const login = async (
   }
 };
 
-// TODO: recoverPassword
+/**
+ * @swagger
+ *  /api/account/recover-password:
+ *    post:
+ *      summary: TODO Recover password
+ *      tags: [Account]
+ *      responses:
+ *        500:
+ *          $ref: '#/components/hidden/_ServerError'
+ */
 export const recoverPassword = async (
   req: IAccountRequest,
   res: Response<IAccountResponse>,
@@ -202,20 +200,18 @@ export const recoverPassword = async (
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/components/schemas/Account'
- *        401:
- *          content:
- *            application/json:
- *              schema:
  *                type: object
  *                properties:
  *                  message:
  *                    type: string
- *                    example: Unauthorized
+ *                    example: Account details
  *                  success:
  *                    type: boolean
- *                    example: false
- *
+ *                    example: true
+ *                  account:
+ *                    $ref: '#/components/schemas/Account'
+ *        401:
+ *          $ref: '#/components/responses/protected'
  *        500:
  *          $ref: '#/components/hidden/_ServerError'
  */
@@ -238,7 +234,16 @@ export const me = async (
   }
 };
 
-// TODO: active
+/**
+ * @swagger
+ *  /api/account/active:
+ *    get:
+ *      summary: TODO Active account
+ *      tags: [Account]
+ *      responses:
+ *        500:
+ *          $ref: '#/components/hidden/_ServerError'
+ */
 export const active = async (
   req: IAccountRequest,
   res: Response<IAccountResponse>,
@@ -254,7 +259,38 @@ export const active = async (
   }
 };
 
-// TODO: refreshToken
+/**
+ * @swagger
+ *  /api/account/refresh-token:
+ *    get:
+ *      summary: Refresh token
+ *      tags: [Account]
+ *      security:
+ *        - bearerAuth: []
+ *      responses:
+ *        200:
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: New tokens have been generated
+ *                  token:
+ *                    type: string
+ *                    example: token
+ *                  refreshToken:
+ *                    type: string
+ *                    refreshToken: refreshToken
+ *                  success:
+ *                    type: boolean
+ *                    example: true
+ *        401:
+ *          $ref: '#/components/responses/protected'
+ *        500:
+ *          $ref: '#/components/hidden/_ServerError'
+ */
 export const refreshToken = async (
   req: IAccountRequest,
   res: Response<IAccountResponse>,

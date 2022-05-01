@@ -18,7 +18,6 @@ import { IAccountModel } from './types';
  *          password:
  *            type: string
  *            example: password
-
  *    schemas:
  *      Account:
  *        allOf:
@@ -33,8 +32,8 @@ import { IAccountModel } from './types';
  *                type: boolean
  *                example: false
  *              role:
- *                type: enum
- *                role: customer
+ *                type: string
+ *                enum: [admin, premium, customer, guest]
  *              updatedAt:
  *                type: string
  *                description: The auto-generated date

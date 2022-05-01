@@ -3,7 +3,33 @@ import jwt from 'jsonwebtoken';
 import { ITokenPayload } from '../controllers/types';
 import { Account } from '../models/Account';
 
-// Check that the token is correct
+/**
+ * @swagger
+ *  components:
+ *    securitySchemes:
+ *      bearerAuth:
+ *        type: http
+ *        scheme: bearer
+ *        bearerFormat: JWT
+ */
+
+/**
+ * @swagger
+ *  components:
+ *    responses:
+ *      protected:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: Bearer token not found
+ *                success:
+ *                  type: boolean
+ *                  example: false
+ */
 export const protect = async (
   req: Request,
   res: Response,
@@ -56,7 +82,6 @@ export const protect = async (
   }
 };
 
-// Only refresh tokens
 export const refresh = async (
   req: Request,
   res: Response,

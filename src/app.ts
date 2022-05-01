@@ -1,5 +1,7 @@
 import 'dotenv/config';
-import express, { Express, Request, Response } from 'express';
+import express, { Express } from 'express';
+import swaggerUI from 'swagger-ui-express';
+import { specs } from './configs/swaggerJsDoc';
 import { sync as sequelizeSyncModels } from './models/sync';
 import router from './routers';
 
@@ -8,9 +10,7 @@ const port = process.env.PORT || 8000;
 
 app.use(express.json());
 app.use('/api', router);
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
-});
+app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs));
 
 sequelizeSyncModels()
   .then(() => {
