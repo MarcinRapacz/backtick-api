@@ -12,7 +12,11 @@ router.post('/login', Controller.login);
 /**
  * Create Account
  */
-router.post('/register', Controller.register);
+router.post(
+  '/register',
+  [authorization.protect, authorization.isAdmin],
+  Controller.register
+);
 
 /**
  * Recover password

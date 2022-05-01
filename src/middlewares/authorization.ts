@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { ITokenPayload } from '../controllers/types';
 import { Account } from '../models/Account';
+import { AccountRole } from '../models/types';
 
 /**
  * @swagger
@@ -119,6 +120,32 @@ export const refresh = async (
       isLoggedIn: false,
       account,
     };
+
+    next();
+  } catch (e) {
+    const error = e as Error;
+    return res.status(401).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+export const isAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { isLoggedIn, account } = req.custom.authorization;
+
+    if (!isLoggedIn || !account) {
+      throw new Error('[Authorization middleware] You are not logged in');
+    }
+
+    if (account.role !== AccountRole.ADMIN) {
+      throw new Error('[Authorization middleware] You are not administrator');
+    }
 
     next();
   } catch (e) {

@@ -15,7 +15,7 @@ interface IAccountAttributes {
   id: string;
   email: string;
   password: string;
-  isActive: boolean;
+  activeToken: string | null;
   role: AccountRole;
 }
 

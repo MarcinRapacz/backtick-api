@@ -23,6 +23,7 @@ export interface IAccountResponse extends IResponse {
   token?: string;
   refreshToken?: string;
   account?: Omit<IAccountModel, 'password'>;
+  activeUrl?: string;
 }
 
 export interface ITokenPayload {

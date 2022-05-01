@@ -17,14 +17,17 @@ import { IAccountRequest, IAccountResponse, ITokenPayload } from './types';
  * @swagger
  *  /api/account/register:
  *    post:
- *      summary: Create new account
+ *      summary: Create new account (only admin)
  *      tags: [Account]
  *      requestBody:
  *        required: true
  *        content:
  *          application/json:
  *            schema:
- *              $ref: '#/components/hidden/_BaseAccount'
+ *              properties:
+ *                email:
+ *                  type: string
+ *                  example: test@test.com
  *      responses:
  *        201:
  *          content:
@@ -35,12 +38,9 @@ import { IAccountRequest, IAccountResponse, ITokenPayload } from './types';
  *                  message:
  *                    type: string
  *                    example: Created Account
- *                  token:
+ *                  activeUrl:
  *                    type: string
- *                    example: token
- *                  refreshToken:
- *                    type: string
- *                    refreshToken: refreshToken
+ *                    example: http://localhost:8000/api/account/active-account/6d0ec407-e6b3-4bee-a640-3819fe093ddc
  *                  success:
  *                    type: boolean
  *                    example: true
@@ -66,7 +66,7 @@ export const register = async (
   next: NextFunction
 ) => {
   try {
-    const { email, password } = req.body;
+    const { email } = req.body;
     const accountExists = await Account.findOne({ where: { email } });
     if (accountExists) {
       return res.status(400).json({
@@ -75,22 +75,22 @@ export const register = async (
       });
     }
 
-    const salt = bcrypt.genSaltSync(10);
-    const encryptedPassword = bcrypt.hashSync(password, salt);
-    const account = await Account.create({
+    const activeToken = crypto.randomUUID();
+    await Account.create({
       id: crypto.randomUUID(),
       email,
-      password: encryptedPassword,
-      isActive: false,
+      password: activeToken,
+      activeToken,
       role: AccountRole.CUSTOMER,
     });
-    const { token, refreshToken } = generateTokens(account);
+
+    const activeUrl = `${process.env.CLIENT_URL}/api/account/active-account/${activeToken}`;
+    // TODO: Send active url by email
 
     res.status(201).json({
       success: true,
       message: 'Created new account',
-      token,
-      refreshToken,
+      activeUrl,
     });
   } catch (error) {
     next(`[AccountController > create] ${error}`);
