@@ -12,7 +12,7 @@ interface IResponse {
 /* 
   ACCOUNT CONTROLLER
 */
-export interface IAccountRequest extends Request {
+export interface IAccountRequest<T = unknown> extends Request<T> {
   body: {
     email: string;
     password: string;

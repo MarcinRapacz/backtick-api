@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { Account } from '../models/Account';
 import { AccountRole, IAccountModel } from '../models/types';
@@ -19,6 +19,8 @@ import { IAccountRequest, IAccountResponse, ITokenPayload } from './types';
  *    post:
  *      summary: Create new account (only admin)
  *      tags: [Account]
+ *      security:
+ *        - bearerAuth: []
  *      requestBody:
  *        required: true
  *        content:
@@ -40,7 +42,7 @@ import { IAccountRequest, IAccountResponse, ITokenPayload } from './types';
  *                    example: Created Account
  *                  activeUrl:
  *                    type: string
- *                    example: http://localhost:8000/api/account/active-account/6d0ec407-e6b3-4bee-a640-3819fe093ddc
+ *                    example: http://localhost:8000/api/account/active/6d0ec407-e6b3-4bee-a640-3819fe093ddc
  *                  success:
  *                    type: boolean
  *                    example: true
@@ -84,7 +86,7 @@ export const register = async (
       role: AccountRole.CUSTOMER,
     });
 
-    const activeUrl = `${process.env.CLIENT_URL}/api/account/active-account/${activeToken}`;
+    const activeUrl = `${process.env.CLIENT_URL}/account/active/${activeToken}`;
     // TODO: Send active url by email
 
     res.status(201).json({
@@ -124,7 +126,7 @@ export const register = async (
  *                    example: Bearer token
  *                  refreshToken:
  *                    type: string
- *                    refreshToken: Bearer refresh token
+ *                    example: Bearer refresh token
  *                  success:
  *                    type: boolean
  *                    example: true
@@ -173,7 +175,7 @@ export const login = async (
  *          $ref: '#/components/hidden/_ServerError'
  */
 export const recoverPassword = async (
-  req: IAccountRequest,
+  req: Request,
   res: Response<IAccountResponse>,
   next: NextFunction
 ) => {
@@ -216,7 +218,7 @@ export const recoverPassword = async (
  *          $ref: '#/components/hidden/_ServerError'
  */
 export const me = async (
-  req: IAccountRequest,
+  req: Request,
   res: Response<IAccountResponse>,
   next: NextFunction
 ) => {
@@ -236,23 +238,95 @@ export const me = async (
 
 /**
  * @swagger
- *  /api/account/active:
- *    get:
- *      summary: TODO Active account
+ *  /api/account/active/:active-token:
+ *    put:
+ *      summary: Active account
  *      tags: [Account]
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              properties:
+ *                password:
+ *                  type: string
+ *                  example: 5dsJBI1cv5XMsycAD58HjlkdrxrfdmLw
+ *      parameters:
+ *        - in: path
+ *          name: active-token
+ *          schema:
+ *            type: string
+ *            required: true
  *      responses:
+ *        200:
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: Account has been activated
+ *                  token:
+ *                    type: string
+ *                    example: Bearer token
+ *                  refreshToken:
+ *                    type: string
+ *                    example: Bearer refresh token
+ *                  success:
+ *                    type: boolean
+ *                    example: true
+ *        404:
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: Account not found
+ *                  success:
+ *                    type: boolean
+ *                    example: false
  *        500:
  *          $ref: '#/components/hidden/_ServerError'
  */
 export const active = async (
-  req: IAccountRequest,
+  req: IAccountRequest<{ activeToken: string }>,
   res: Response<IAccountResponse>,
   next: NextFunction
 ) => {
   try {
+    const { activeToken } = req.params;
+    const { password } = req.body;
+
+    const account = await Account.findOne({
+      where: {
+        activeToken,
+      },
+    });
+
+    if (!account) {
+      return res.status(404).json({
+        message: '[AccountController > active] Account not found',
+        success: false,
+      });
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    const encryptedPassword = bcrypt.hashSync(password, salt);
+
+    account.activeToken = null;
+    account.password = encryptedPassword;
+    await account.save();
+
+    const { token, refreshToken } = generateTokens(account);
+
     res.status(200).json({
-      message: 'TODO: active',
-      success: false,
+      message: '[AccountController > active] Account has been activated',
+      success: true,
+      token,
+      refreshToken,
     });
   } catch (error) {
     next(`[AccountController > active] ${error}`);
@@ -282,7 +356,7 @@ export const active = async (
  *                    example: token
  *                  refreshToken:
  *                    type: string
- *                    refreshToken: refreshToken
+ *                    example: refreshToken
  *                  success:
  *                    type: boolean
  *                    example: true
@@ -292,7 +366,7 @@ export const active = async (
  *          $ref: '#/components/hidden/_ServerError'
  */
 export const refreshToken = async (
-  req: IAccountRequest,
+  req: Request,
   res: Response<IAccountResponse>,
   next: NextFunction
 ) => {
@@ -339,7 +413,7 @@ export const refreshToken = async (
  *          $ref: '#/components/hidden/_ServerError'
  */
 export const remove = async (
-  req: IAccountRequest,
+  req: Request,
   res: Response<IAccountResponse>,
   next: NextFunction
 ) => {

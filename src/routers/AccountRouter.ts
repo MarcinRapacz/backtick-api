@@ -10,7 +10,7 @@ const router = express.Router();
 router.post('/login', Controller.login);
 
 /**
- * Create Account
+ * Create
  */
 router.post(
   '/register',
@@ -24,14 +24,14 @@ router.post(
 router.post('/recover-password', Controller.recoverPassword);
 
 /**
- * Return account details
+ * Return details
  */
 router.get('/me', authorization.protect, Controller.me);
 
 /**
- * Active user
+ * Active
  */
-router.get('/active', Controller.active);
+router.put('/active/:activeToken', Controller.active);
 
 /**
  * Refresh token
@@ -39,7 +39,7 @@ router.get('/active', Controller.active);
 router.get('/refresh-token', authorization.refresh, Controller.refreshToken);
 
 /**
- * Remove account
+ * Remove
  */
 router.delete('/delete', authorization.protect, Controller.remove);
 
