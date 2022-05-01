@@ -6,6 +6,7 @@ import { Model, Optional } from 'sequelize';
 
 export enum AccountRole {
   ADMIN = 'admin',
+  PREMIUM = 'premium',
   CUSTOMER = 'customer',
   GUEST = 'guest',
 }

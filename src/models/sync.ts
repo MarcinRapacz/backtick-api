@@ -4,7 +4,7 @@ import { Account } from './Account';
 // If you want to sync models, you should add them to this method
 // e.g. Models.sync();
 const sync = async () => {
-  await Promise.all([Account.sync({ alter: true })]);
+  await Promise.all([Account.sync()]);
 };
 
 export { sync };

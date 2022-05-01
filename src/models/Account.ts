@@ -18,12 +18,7 @@ import { IAccountModel } from './types';
  *          password:
  *            type: string
  *            example: password
- *          isActive:
- *            type: boolean
- *            example: false
- *          role:
- *            type: enum
- *            role: customer
+
  *    schemas:
  *      Account:
  *        allOf:
@@ -34,6 +29,12 @@ import { IAccountModel } from './types';
  *                type: string
  *                description: The auto-generated id of the Account
  *                example: 8fc85466-d795-4b63-aa8b-a147b77150bb
+ *              isActive:
+ *                type: boolean
+ *                example: false
+ *              role:
+ *                type: enum
+ *                role: customer
  *              updatedAt:
  *                type: string
  *                description: The auto-generated date
@@ -66,7 +67,7 @@ export const Account = sequelize.define<IAccountModel>('Account', {
     allowNull: false,
   },
   role: {
-    type: DataTypes.ENUM('admin', 'customer', 'guest'),
+    type: DataTypes.ENUM('admin', 'premium', 'customer', 'guest'),
     defaultValue: 'customer',
     allowNull: false,
   },

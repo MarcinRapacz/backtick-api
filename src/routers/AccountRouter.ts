@@ -1,33 +1,37 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import * as Controller from '../controllers/AccountController';
+import * as authorization from '../middlewares/authorization';
 
 const router = express.Router();
 
 /**
  * Login
  */
-router.post('/login', (_req: Request, res: Response) => {
-  res.status(200).json('Login, ok');
-});
+router.post('/login', Controller.login);
 
 /**
  * Create Account
  */
-router.post('/register', (_req: Request, res: Response) => {
-  res.status(201).json('Register, ok');
-});
+router.post('/register', Controller.register);
 
 /**
- * Reset password
+ * Recover password
  */
-router.post('/recover-password', (_req: Request, res: Response) => {
-  res.status(200).json('Recover password, ok');
-});
+router.post('/recover-password', Controller.recoverPassword);
 
 /**
  * Return account details
  */
-router.get('/me', (_req: Request, res: Response) => {
-  res.status(200).json('Account details, ok');
-});
+router.get('/me', authorization.protect, Controller.me);
+
+/**
+ * Active user
+ */
+router.get('/active', Controller.active);
+
+/**
+ * Refresh token
+ */
+router.get('/refresh-token', authorization.refresh, Controller.refreshToken);
 
 export default router;

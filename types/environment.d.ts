@@ -7,6 +7,7 @@ declare global {
       SEQUELIZE_DATABASE: string;
       SEQUELIZE_HOST: string;
       SEQUELIZE_DIALECT: 'mysql' | 'mariadb' | 'postgres' | 'mssql';
+      JWT_SECRET: string;
     }
   }
 }
