@@ -1,5 +1,5 @@
 import express from 'express';
-import * as Controller from '../controllers/AccountController';
+import * as controller from '../controllers/AccountController';
 import * as authorization from '../middlewares/authorization';
 import { handleValidator } from '../middlewares/validator';
 import * as validator from '../validators/AccountValidator';
@@ -9,7 +9,7 @@ const router = express.Router();
 /**
  * Login
  */
-router.post('/login', [...handleValidator(validator.login)], Controller.login);
+router.post('/login', [...handleValidator(validator.login)], controller.login);
 
 /**
  * Create
@@ -21,7 +21,7 @@ router.post(
     authorization.protect,
     authorization.isAdmin,
   ],
-  Controller.register
+  controller.register
 );
 
 /**
@@ -30,7 +30,7 @@ router.post(
 router.post(
   '/recover-password',
   [...handleValidator(validator.recoverPassword)],
-  Controller.recoverPassword
+  controller.recoverPassword
 );
 
 /**
@@ -39,7 +39,7 @@ router.post(
 router.get(
   '/me',
   [...handleValidator(validator.recoverPassword), authorization.protect],
-  Controller.me
+  controller.me
 );
 
 /**
@@ -48,7 +48,7 @@ router.get(
 router.put(
   '/active/:activeToken',
   [...handleValidator(validator.active)],
-  Controller.active
+  controller.active
 );
 
 /**
@@ -61,7 +61,7 @@ router.put(
     ...handleValidator(validator.deactivatePasswordRecoveryLink),
     authorization.protect,
   ],
-  Controller.deactivatePasswordRecoveryLink
+  controller.deactivatePasswordRecoveryLink
 );
 
 /**
@@ -70,7 +70,7 @@ router.put(
 router.get(
   '/refresh-token',
   [...handleValidator(validator.refreshToken), authorization.refresh],
-  Controller.refreshToken
+  controller.refreshToken
 );
 
 /**
@@ -79,7 +79,7 @@ router.get(
 router.delete(
   '/delete',
   [...handleValidator(validator.remove), authorization.protect],
-  Controller.remove
+  controller.remove
 );
 
 export default router;
