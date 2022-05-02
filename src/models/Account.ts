@@ -15,9 +15,12 @@ import { IAccountModel } from './types';
  *          email:
  *            type: string
  *            example: test@test.com
+ *            format: email
  *          password:
  *            type: string
  *            example: password
+ *            minLength: 8
+ *            maxLength: 64
  *    schemas:
  *      Account:
  *        allOf:

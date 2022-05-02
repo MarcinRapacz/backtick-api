@@ -26,10 +26,13 @@ import { IAccountRequest, IAccountResponse, ITokenPayload } from './types';
  *        content:
  *          application/json:
  *            schema:
+ *              required:
+ *                - email
  *              properties:
  *                email:
  *                  type: string
  *                  example: test@test.com
+ *                  format: email
  *      responses:
  *        201:
  *          content:
@@ -175,10 +178,13 @@ export const login = async (
  *        content:
  *          application/json:
  *            schema:
+ *              required:
+ *                - email
  *              properties:
  *                email:
  *                  type: string
  *                  example: test@test.com
+ *                  format: email
  *      responses:
  *        200:
  *          content:
@@ -336,12 +342,15 @@ export const refreshToken = async (
  *                password:
  *                  type: string
  *                  example: 5dsJBI1cv5XMsycAD58HjlkdrxrfdmLw
+ *                  minLength: 8
+ *                  maxLength: 64
  *      parameters:
  *        - in: path
  *          name: active-token
  *          schema:
  *            type: string
  *            required: true
+ *            format: uuid
  *      responses:
  *        200:
  *          content:
