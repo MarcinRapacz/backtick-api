@@ -12,7 +12,9 @@ export const patternBody = {
 export const patternHeader = {
   get authorizationToken() {
     return header('Authorization')
-      .custom((value) => value?.includes('Bearer '))
+      .custom((value) =>
+        /^Bearer [A-Za-z0-9-_]*\.[A-Za-z0-9-_]*\.[A-Za-z0-9-_]*$/.test(value)
+      )
       .withMessage('Invalid token format');
   },
 };
