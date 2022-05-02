@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { ValidationError } from 'express-validator';
 import { IAccountModel } from '../models/types';
 
 /* 
@@ -7,6 +8,7 @@ import { IAccountModel } from '../models/types';
 interface IResponse {
   message: string;
   success: boolean;
+  errors?: ValidationError[];
 }
 
 /* 
